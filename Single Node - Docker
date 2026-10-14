@@ -1,0 +1,17 @@
+1. Install Docker
+2. Run Rancher Container
+
+Wait for a while and get the bootstrap password.
+
+#############################################################
+
+sudo yum install docker -y
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+sudo systemctl start docker.service
+sudo chmod 777 /var/run/docker.sock
+
+
+docker run -d --restart=unless-stopped   -p 80:80 -p 443:443   --privileged   rancher/rancher:latest
+docker ps
+docker logs <<container_name>> 2>&1 | grep "Bootstrap Password"

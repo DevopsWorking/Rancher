@@ -1,0 +1,68 @@
+1. SetUp using Kubeadm
+2. Helm Installation
+
+3.Set your node IP and hostname
+
+    export NODE_IP=<<Your NODE IP>>
+    export HOSTNAME="${NODE_IP}.sslip.io"
+
+4. Install NGINX Ingress
+
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
+
+    helm upgrade --install ingress-nginx \
+    ingress-nginx/ingress-nginx \
+    --namespace ingress-nginx \
+    --create-namespace \
+    --set controller.service.type=NodePort \
+    --set controller.service.nodePorts.http=30080 \
+    --set controller.service.nodePorts.https=30443
+
+5. Install cert-manager
+
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+
+    helm upgrade --install cert-manager \
+    jetstack/cert-manager \
+    --namespace cert-manager \
+    --create-namespace \
+    --set crds.enabled=true
+
+    kubectl get pods -n cert-manager
+
+6. Add the Rancher Helm repository
+
+    helm repo add rancher-stable \
+    https://releases.rancher.com/server-charts/stable
+
+    helm repo update
+
+    kubectl create namespace cattle-system
+
+7. Install Rancher with NGINX Ingress
+
+    read -s -p "Enter Rancher admin password: " BOOTSTRAP_PASSWORD
+    echo
+
+    helm upgrade --install rancher \
+    rancher-stable/rancher \
+    --namespace cattle-system \
+    --set hostname="$HOSTNAME" \
+    --set replicas=1 \
+    --set bootstrapPassword="$BOOTSTRAP_PASSWORD" \
+    --set ingress.ingressClassName=nginx \
+    --set ingress.tls.source=rancher
+
+8. Verify the installation
+
+    kubectl get pods -n cattle-system
+    kubectl get svc -n cattle-system
+    kubectl get ingress -n cattle-system
+
+    kubectl rollout status deployment/rancher -n cattle-system --timeout=10m
+
+
+URL
+https://13.201.45.67.sslip.io:30443

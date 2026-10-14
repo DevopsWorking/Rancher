@@ -1,0 +1,5 @@
+1. Download and Install K3s on raw server
+2. sudo systemctl status k3s
+3. sudo k3s kubectl get nodes
+
+Now use all commands as with  ------> sudo k3s kubectl     (For direct kubectl path ok kubeconfig needs to set)

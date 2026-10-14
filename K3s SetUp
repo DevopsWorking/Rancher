@@ -1,4 +1,6 @@
 1. Download and Install K3s on raw server
+    curl -sfL https://get.k3s.io | sh -
+
 2. sudo systemctl status k3s
 3. sudo k3s kubectl get nodes
 
